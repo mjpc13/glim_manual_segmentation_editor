@@ -13,13 +13,19 @@ This package links against GLIM, reuses the same viewer stack, and stores semant
   - outlier radius selection
   - MinCut segmentation
   - RegionGrowing segmentation
-  - Automatic ground selection based in [https://github.com/dcmlr/groundgrid/tree/main
-  ](GroundGrid)
+  - Automatic ground selection based on [GroundGrid](https://github.com/dcmlr/groundgrid/tree/ros2-jazzy)
+  - GroundGrid-based ground flattening for easier point selection
 - Assign integer semantic class IDs to selected points.
 - Edit class names and RGBA colors.
 - Switch visualization between segmentation, intensity, Z height, and flat color.
 - Save and reload labels from `<map_path>/semantic_labels.json`.
 - Export a binary PLY with a per-point signed 32-bit `class` property.
+
+## Gallery
+
+![Ground Selection Segmentation](assets/ground_selection_segmentation.gif)
+
+![Tree Selection Segmentation](assets/tree_selection_segmentation.gif)
 
 ## Build
 
