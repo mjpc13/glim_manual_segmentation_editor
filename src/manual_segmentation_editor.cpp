@@ -182,6 +182,7 @@ void ManualSegmentationEditor::ui_callback() {
 }
 
 void ManualSegmentationEditor::draw_label_ui() {
+  ImGui::SetNextWindowPos(ImVec2(430.0f, 30.0f), ImGuiCond_FirstUseEver);
   if (!ImGui::Begin("Semantic Labels", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::End();
     return;

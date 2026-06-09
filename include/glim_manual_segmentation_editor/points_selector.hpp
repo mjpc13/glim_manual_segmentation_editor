@@ -10,6 +10,7 @@
 #include <vector>
 
 #include <glim/mapping/sub_map.hpp>
+#include <glim_manual_segmentation_editor/ground_grid_selector.hpp>
 #include <glim_manual_segmentation_editor/map_cell.hpp>
 #include <glk/pointcloud_buffer.hpp>
 #include <gtsam_points/segmentation/min_cut.hpp>
@@ -47,6 +48,7 @@ private:
   void select_points_radius();
   void select_outlier_points_radius();
   void select_points_segmentation();
+  void select_ground_points();
 
 private:
   std::vector<glim::SubMap::Ptr> submaps;
@@ -80,6 +82,8 @@ private:
   int segmentation_method;
   gtsam_points::MinCutParams min_cut_params;
   gtsam_points::RegionGrowingParams region_growing_params;
+
+  GroundGridSelectorConfig ground_grid_config;
 
   std::shared_ptr<spdlog::logger> logger;
 };

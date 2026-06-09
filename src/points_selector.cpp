@@ -267,6 +267,7 @@ void PointsSelector::draw_ui() {
     ImGui::End();
   }
 
+  ImGui::SetNextWindowPos(ImVec2(10.0f, 30.0f), ImGuiCond_FirstUseEver);
   if (ImGui::Begin("Editor", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
     ImGui::Text("Submaps: %ld  Cells: %ld", submaps.size(), map_cells.size());
     ImGui::Text("Selected points: %ld", selected_point_ids.size());
@@ -318,6 +319,35 @@ void PointsSelector::draw_ui() {
 
     if (show_gizmo) {
       model_control->draw_gizmo();
+    }
+
+    ImGui::Separator();
+    if (ImGui::BeginMenu("GroundGrid config")) {
+      ImGui::DragFloat("Grid resolution", &ground_grid_config.resolution, 0.01f, 0.05f, 5.0f, "%.2f m");
+      show_note("GroundGrid raster cell size");
+      ImGui::DragInt("Cell variance point threshold", &ground_grid_config.point_count_cell_variance_threshold, 1, 1, 1000);
+      show_note("Use only the center cell variance after this point count");
+      ImGui::DragFloat("Distance factor", &ground_grid_config.distance_factor, 0.00001f, 0.0f, 0.01f, "%.6f");
+      show_note("Ground patch variance threshold distance factor");
+      ImGui::DragFloat("Minimum distance factor", &ground_grid_config.min_distance_factor, 0.00001f, 0.0f, 0.01f, "%.6f");
+      show_note("Minimum GroundGrid distance factor");
+      ImGui::DragFloat("Ground height threshold", &ground_grid_config.min_point_height_threshold, 0.01f, 0.01f, 2.0f, "%.2f m");
+      show_note("Points below ground height plus this threshold are selected as ground");
+      ImGui::DragFloat("Obstacle height threshold", &ground_grid_config.min_point_height_obstacle_threshold, 0.01f, 0.01f, 2.0f, "%.2f m");
+      show_note("Minimum ground tolerance close to rough/obstacle cells");
+      ImGui::DragFloat("Minimum patch point ratio", &ground_grid_config.min_ground_patch_detection_point_count_threshold, 0.01f, 0.01f, 2.0f, "%.2f");
+      show_note("GroundGrid patch point-count threshold as a ratio of expected points");
+      ImGui::DragFloat("Patch size change distance", &ground_grid_config.patch_size_change_distance, 0.5f, 1.0f, 200.0f, "%.1f m");
+      show_note("Use 5x5 patches after this distance from the grid center");
+      ImGui::DragFloat("Horizontal angular distance", &ground_grid_config.horizontal_point_angular_distance, 0.0001f, 0.0001f, 0.1f, "%.6f rad");
+      show_note("LiDAR horizontal angular resolution used for expected point count");
+      ImGui::DragInt("Max grid cells", &ground_grid_config.max_grid_cells, 10000, 10000, 50000000);
+      show_note("The selector coarsens the grid if the map would exceed this many cells");
+      ImGui::EndMenu();
+    }
+
+    if (ImGui::Button("Select Ground Points") || show_note("Automatically select ground points with GroundGrid")) {
+      select_ground_points();
     }
 
     if (ImGui::Button("Unselect points") || show_note("Clear selected points")) {
@@ -688,6 +718,42 @@ void PointsSelector::select_points_segmentation() {
   auto selected_points = collect_submap_points(selected_point_ids);
   guik::viewer()->update_points("selected", selected_points->points, selected_points->size(), guik::FlatOrange().set_alpha(0.8).set_point_scale(2.0f));
   logger->info("Select points by segmentation: {} points selected", selected_points->size());
+}
+
+void PointsSelector::select_ground_points() {
+  selected_point_ids.clear();
+
+  if (submaps.empty()) {
+    logger->warn("No map loaded");
+    guik::viewer()->remove_drawable("selected");
+    return;
+  }
+
+  const auto result = GroundGridSelector::select_ground_points(submaps, ground_grid_config, logger);
+  selected_point_ids = result.point_ids;
+
+  if (selected_point_ids.empty()) {
+    logger->warn(
+      "Select ground points: no points selected ({} input points, {} ground patches, {}x{} grid at {:.3f}m)",
+      result.input_point_count,
+      result.ground_patch_count,
+      result.cell_count,
+      result.cell_count,
+      result.resolution);
+    guik::viewer()->remove_drawable("selected");
+    return;
+  }
+
+  auto selected_points = collect_submap_points(selected_point_ids);
+  guik::viewer()->update_points("selected", selected_points->points, selected_points->size(), guik::FlatOrange().set_alpha(0.8).set_point_scale(2.0f));
+  logger->info(
+    "Select ground points: {} points selected from {} input points ({} ground patches, {}x{} grid at {:.3f}m)",
+    selected_points->size(),
+    result.input_point_count,
+    result.ground_patch_count,
+    result.cell_count,
+    result.cell_count,
+    result.resolution);
 }
 
 }  // namespace glim_manual_segmentation_editor

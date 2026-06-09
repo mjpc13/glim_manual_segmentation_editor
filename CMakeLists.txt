@@ -28,6 +28,7 @@ find_package(spdlog REQUIRED)
 
 add_library(${PROJECT_NAME}_core SHARED
   src/map_cell.cpp
+  src/ground_grid_selector.cpp
   src/points_selector.cpp
   src/point_label_layer.cpp
   src/manual_segmentation_editor.cpp
