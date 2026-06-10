@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -51,6 +52,7 @@ public:
   bool has_complete_intensities() const;
 
   std::size_t labeled_count() const;
+  std::map<int, std::size_t> class_counts() const;
   const std::vector<std::vector<std::int32_t>>& labels() const;
 
   bool assign_selected(const std::vector<std::uint64_t>& point_ids);

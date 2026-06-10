@@ -14,7 +14,6 @@ This package links against GLIM, reuses the same viewer stack, and stores semant
   - MinCut segmentation
   - RegionGrowing segmentation
   - Automatic ground selection based on [GroundGrid](https://github.com/dcmlr/groundgrid/tree/ros2-jazzy)
-  - GroundGrid-based ground flattening for easier point selection
 - Assign integer semantic class IDs to selected points.
 - Edit class names and RGBA colors.
 - Switch visualization between segmentation, intensity, Z height, and flat color.

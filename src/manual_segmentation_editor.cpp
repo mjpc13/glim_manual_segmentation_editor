@@ -259,12 +259,14 @@ void ManualSegmentationEditor::draw_label_ui() {
 
   ImGui::Separator();
   ImGui::Text("Classes");
-  for (const auto& cls : label_layer->classes()) {
+  const auto class_counts = label_layer->class_counts();
+  for (const auto& [class_id, point_count] : class_counts) {
+    const auto cls = label_layer->class_or_default(class_id);
     const ImVec4 color(cls.color.x(), cls.color.y(), cls.color.z(), cls.color.w());
     const std::string color_id = "##class_color_" + std::to_string(cls.id);
     ImGui::ColorButton(color_id.c_str(), color);
     ImGui::SameLine();
-    ImGui::Text("%d  %s", cls.id, cls.name.c_str());
+    ImGui::Text("%d  %s  (%zu %s)", cls.id, cls.name.c_str(), point_count, point_count == 1 ? "point" : "points");
   }
 
   ImGui::End();

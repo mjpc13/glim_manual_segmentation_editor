@@ -167,6 +167,22 @@ std::size_t PointLabelLayer::labeled_count() const {
   return count;
 }
 
+std::map<int, std::size_t> PointLabelLayer::class_counts() const {
+  std::map<int, std::size_t> counts;
+  for (const auto& cls : class_infos) {
+    counts.emplace(cls.id, 0);
+  }
+
+  for (const auto& labels : labels_by_submap) {
+    for (const auto label : labels) {
+      const int class_id = label < 0 ? 0 : static_cast<int>(label);
+      ++counts[class_id];
+    }
+  }
+
+  return counts;
+}
+
 const std::vector<std::vector<std::int32_t>>& PointLabelLayer::labels() const {
   return labels_by_submap;
 }

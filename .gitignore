@@ -33,3 +33,6 @@ __pycache__/
 
 # Runtime logs
 *.log
+
+# ImGui local window layout
+imgui.ini
